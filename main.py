@@ -5,6 +5,7 @@ import csv
 # initialize the list of discovered urls
 # with the first page to visit
 urls = ["https://scrapeme.live/shop/"]
+visited = []
 #Array to store dict entries of products and their data
 products = []
 
@@ -20,16 +21,17 @@ while len(urls) != 0:
     link_elements = soup.select("a[href]")
     for link_element in link_elements:
         url = link_element['href']
-        if "https://scrapeme.live/shop" in url:
+        if ("https://scrapeme.live/shop" in url) and (url not in visited):
             urls.append(url)
+            visited.append(url)
 
-    print("Number of Urls remaining: " + str(len(urls)))
+    #print("Number of Urls remaining: " + str(len(urls)))
 
     #Extract specific data from products and store it
     product = {}
     product["url"] = current_url 
     product["image"] = soup.select_one(".wp-post-image")["src"]
-    #product["title"] = soup.select_one(".product_title").text() 
+    product["title"] = soup.select_one(".product_title.entry-title")
     product["price"] = soup.select_one(".price")
 
     #place product in products array for CSV to read through
