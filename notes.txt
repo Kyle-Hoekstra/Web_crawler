@@ -1,0 +1,2 @@
+Starting url: https://www.espn.com/nba/stats/player
+if https://www.espn.com/nba/stats/player/id in url
