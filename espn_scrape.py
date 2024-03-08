@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import csv
 import time
 import random
+import pandas as pd
+
 
 # initialize the list of discovered urls
 # with the first page to visit
