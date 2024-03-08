@@ -4,29 +4,29 @@ import csv
 
 # initialize the list of discovered urls
 # with the first page to visit
-urls = ["https://www.espn.com/nba/stats/player/"]
+start_url = "https://www.basketball-reference.com/leagues/NBA_2017_totals.html"
+page = requests.get(start_url)
+soup = BeautifulSoup(page.text, 'html.parser')
+
+urls = []
 visited = []
-#Array to store dict entries of products and their data
-products = []
 
-# until all pages have been visited
-while len(urls) != 0:
-    # get the page to visit from the list
-    current_url = urls.pop()
-    
-    # crawling logic
-    response = requests.get(current_url)
-    soup = BeautifulSoup(response.content, "html.parser")
 
-    link_elements = soup.select('.AnchorLink')
-    print("here")
-    for link_element in link_elements:
-        url = link_element['href']
-        if ("https://www.espn.com/nba/player/_/id" in url) and (url not in visited):
-            urls.append(url)
-            visited.append(url)
-    
-    print("Number of Urls remaining: " + str(len(urls)))
+# Gather links to players' pages
+link_elements = soup.select("a[href]")
+print("before loop\n")
+for link_element in link_elements:
+    print("inside")
+    url = link_element['href']
+    if ("/players/" in url) and (".html" in url) and (url not in visited):
+        urls.append(url)
+        visited.append(url)
 
 for link in visited:
     print(link)
+
+
+page2 = requests.get(visited[0])
+soup2 = BeautifulSoup(page2.text, 'html.parser')
+
+
