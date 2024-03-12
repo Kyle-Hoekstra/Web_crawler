@@ -9,7 +9,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/python
 # The first parameter 'main.py' is the name of the file on the host.
 # The second parameter '/' is the path where to put the file on the image.
 # Here we put the file at the image root folder.
-COPY espn_scrape.py /
+COPY bballref_scrape.py /
 COPY pokemon_scrape.py /
 
 #install dependencies
