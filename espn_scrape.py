@@ -1,3 +1,6 @@
+# All scraped data is the property of basketball-reference.com
+
+
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -5,7 +8,7 @@ import time
 import random
 import pandas as pd
 from fake_useragent import UserAgent
-from IPython.core.display import clear_output
+from IPython.display import clear_output
 from urllib.request import Request, urlopen
 
 
@@ -131,28 +134,31 @@ print("Extracting player links...")
 for link_element in link_elements:
     url = link_element['href']
 
-    if ("/players/" in url) and (".html" in url) and url not in visited:
+    if ("/players/" in url) and (".html" in url) and (url not in visited):
         urls.append(url)
         visited.append(url)
 
-print(str(len(urls)) + " players to extract.\n")
+total_players = len(urls)
+print(str(total_players) + " players to extract.\n")
 # Scrape through player urls
 print("Extracting player data...")
 tables_not_found = 0
-num_players = 0
+current_player = 1
 
 
 
 for link in urls:
     '''
     Basketball-reference.com's bot policy
-    Currently we will block users sending requests to:
+        Currently we will block users sending requests to:
         our sites more often than twenty requests in a minute.
         This is regardless of bot type and construction and pages accessed.
         If you violate this rule your session will be in jail for an hour.
     '''
     # Delay of 3 to 4 seconds to comply with bot policy to limit to <20 requests per minute
     my_delay()
+    print(str(current_player) + "/" + str(total_players))
+    current_player += 1
     # urls should already be unique as copies were filtered out above
     player_url = "https://www.basketball-reference.com" + link
 
@@ -167,7 +173,7 @@ for link in urls:
     soup2 = BeautifulSoup(player_page.text, 'html.parser')
 
     #Extract table of player stats data
-    table = soup2.find('table', class_='stats_table sortable row_summable')
+    table = soup2.find('table', class_='stats_table sortable row_summable', id='per_game')
     
     if type(table) == type(None):
         # If player doesn't have a table, ignore for now
@@ -176,9 +182,14 @@ for link in urls:
         print("no table" + str(tables_not_found))
         continue
 
-    #extract data from individual player table
-    for row in table.tbody.find_all('tr'):
+    #extract data from individual player table for 16-17 season
+    row = table.tbody.find('tr', id="per_game.2017")
+    try:
         columns = row.find_all('td')
+    except:
+        # if the row is missing just move to next person
+        print("Missing data")
+        continue
 
     #Extract specific data from player table and store it
     player_data = {}
@@ -191,7 +202,10 @@ for link in urls:
     player_data["name"] = player_name
 
     #age of the player
-    player_data["age"] = (columns[0].text.strip())
+    try:
+        player_data["age"] = (columns[0].text.strip())
+    except:
+        player_data["age"] = "x"
 
     #Stats of the player{position, games played, games started, mpg}
     try:
